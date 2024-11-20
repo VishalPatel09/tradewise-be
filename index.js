@@ -9,6 +9,7 @@ const { HoldingsModel } = require("./models/HoldingsModel");
 
 const { PositionsModel } = require("./models/PositionsModel");
 const { OrderModel } = require("./models/OrdersModel");
+const { UsersModel } = require("./models/UsersModel");
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -256,6 +257,74 @@ app.get("/allOrders", async (req, res) => {
   let allOrders = await OrderModel.find({});
   res.json(allOrders);
 });
+ 
+app.post("/signup", async(req,res)=>{
+
+  const {name, email , password} = req.body
+
+  let newUser = new UsersModel({
+    name: name,
+    email:email,
+    password:password,
+  })
+
+  try{
+    const check = await UsersModel.findOne({email:email})
+
+    if(check){
+      res.json("User already exist")
+    }
+    else{
+      
+      await newUser.save()
+      res.json("Registered Successfully")
+    }
+  }
+  catch(e){
+    res.json("Error")
+  }
+
+})
+
+
+
+// Login API
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if the user exists in the database
+    const user = await UsersModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User does not exist" });
+    }
+
+    // Compare the provided password with the stored password
+    if (password !== user.password) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    // Respond with a success message and user data
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
+// Export the app for use in other files
+module.exports = app;
+
 
 app.listen(PORT, () => {
   console.log("App started!");
