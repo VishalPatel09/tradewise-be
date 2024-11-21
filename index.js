@@ -17,10 +17,10 @@ const uri = process.env.MONGO_URL;
 const app = express();
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://tradewise-fe.vercel.app'], // Allow only your frontend
+  origin: '*' , // Allow only your frontend
   methods: 'GET,POST,PUT,DELETE', // Allowed HTTP methods
   allowedHeaders: 'Content-Type,Authorization', // Allowed headers
-  credentials: true,
+  
 };
 
 app.use(cors(corsOptions));
