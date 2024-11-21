@@ -17,13 +17,14 @@ const uri = process.env.MONGO_URL;
 const app = express();
 
 const corsOptions = {
-  origin: '*' , // Allow only your frontend
+  origin: ['http://localhost:3000', 'https://tradewise-fe.vercel.app'], // Allowed origins
   methods: 'GET,POST,PUT,DELETE', // Allowed HTTP methods
   allowedHeaders: 'Content-Type,Authorization', // Allowed headers
-  
+  credentials: true, // Include credentials if needed (cookies, HTTP auth)
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Apply CORS middleware
+app.options('*', cors(corsOptions));
 app.use(bodyParser.json());
 
  app.get("/addHoldings", async (req, res) => {
